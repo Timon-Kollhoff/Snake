@@ -13,21 +13,19 @@ let snake = [{
     y: 3
 }];
 
-let food = {
-    x: 4,
-    y: 5
-};
-
+let food;
 
 let cellwidth = canvas.width/collum;
 let cellheight = canvas.height/row;
 let direction = "LEFT";
+let foodcollected = false;
 
-
-setInterval(gameLoop ,400);
+placefood();
+setInterval(gameLoop ,300);
 document.addEventListener("keydown" , keyDown);
 
 draw();
+
 
 function draw() { 
     ctx.fillStyle = 'black';
@@ -48,10 +46,35 @@ function draw() {
   }
 
 
+  function shiftsnake() { 
+    for (let i = snake.length -1; i  > 0 ; i--) {
+        const part = snake[i];
+        const lastpart = snake[i-1];
+        part.x = lastpart.x;
+        part.y = lastpart.y;
+    }
+   }
+
   function gameLoop() { 
+   
+    if(snake[0].x == collum || snake[0].y == row || snake[0].x == -1 || snake[0].y == -1){
+        snake = [{
+            x: 8,
+            y: 3
+        }];
+    }
+
+    if(foodcollected){
+        snake = [{
+            x:snake[0].x ,
+            y:snake[0].y
+
+        }, ...snake];
+        foodcollected= false;
+    }
+    shiftsnake();
     if(direction == "LEFT"){
         snake[0].x--;
-
     }
     if(direction == "UP"){
         snake[0].y--;
@@ -62,8 +85,24 @@ function draw() {
     if(direction == "DOWN"){
         snake[0].y++;
     }
+
+    if(snake[0].x == food.x && snake[0].y == food.y){
+
+        foodcollected = true;
+        placefood();
+    }
     
    }
+
+
+   function placefood() { 
+
+    food = {
+        x: Math.floor(Math.random() * collum -1) + 1,
+        y: Math.floor(Math.random() * collum -1) + 1
+    };
+    
+    }
 
 
    function keyDown(e) { 
